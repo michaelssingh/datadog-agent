@@ -2,47 +2,42 @@
 #define MIN_PASS_LEN 12
 #define MAX_PASS_LEN 18
 // usercreate.cpp
-bool generatePassword(wchar_t* passbuf, int passbuflen);
-int doCreateUser(const std::wstring& name, const std::wstring& comment, const wchar_t* passbuf);
-int doSetUserPassword(const std::wstring& name, const wchar_t* passbuf);
-DWORD changeRegistryAcls(CustomActionData& data, const wchar_t* name);
-DWORD addDdUserPermsToFile(CustomActionData& data, std::wstring &filename);
-int doesUserExist(const CustomActionData& data, bool isDC = false);
+bool generatePassword(wchar_t *passbuf, int passbuflen);
+int doCreateUser(const std::wstring &name, const std::wstring &comment, const wchar_t *passbuf);
+int doSetUserPassword(const std::wstring &name, const wchar_t *passbuf);
+DWORD changeRegistryAcls(CustomActionData &data, const wchar_t *name);
+DWORD addDdUserPermsToFile(CustomActionData &data, std::wstring &filename);
+int doesUserExist(const CustomActionData &data, bool isDC = false);
 
 void removeUserPermsFromFile(std::wstring &filename, PSID sidremove);
 
-DWORD DeleteUser(const wchar_t* host, const wchar_t* name);
-
+DWORD DeleteUser(const wchar_t *host, const wchar_t *name);
 
 bool AddPrivileges(PSID AccountSID, LSA_HANDLE PolicyHandle, LPCWSTR rightToAdd);
 bool RemovePrivileges(PSID AccountSID, LSA_HANDLE PolicyHandle, LPCWSTR rightToAdd);
-int EnableServiceForUser(CustomActionData& data, const std::wstring& service);
-DWORD AddUserToGroup(PSID userSid, wchar_t* groupSidString, wchar_t* defaultGroupName);
-DWORD DelUserFromGroup(PSID userSid, wchar_t* groupSidString, wchar_t* defaultGroupName);
-bool InitLsaString(
-	PLSA_UNICODE_STRING pLsaString,
-	LPCWSTR pwszString);
+int EnableServiceForUser(CustomActionData &data, const std::wstring &service);
+DWORD AddUserToGroup(PSID userSid, wchar_t *groupSidString, wchar_t *defaultGroupName);
+DWORD DelUserFromGroup(PSID userSid, wchar_t *groupSidString, wchar_t *defaultGroupName);
+bool InitLsaString(PLSA_UNICODE_STRING pLsaString, LPCWSTR pwszString);
 
 PSID GetSidForUser(LPCWSTR host, LPCWSTR user);
-bool GetNameForSid(LPCWSTR host, PSID sid, std::wstring& namestr);
+bool GetNameForSid(LPCWSTR host, PSID sid, std::wstring &namestr);
 
 LSA_HANDLE GetPolicyHandle();
 
-
-
-//stopservices.cpp
-VOID  DoStopSvc(std::wstring &svcName);
+// stopservices.cpp
+VOID DoStopSvc(std::wstring &svcName);
 DWORD DoStartSvc(std::wstring &svcName);
-int doesServiceExist(std::wstring& svcName);
-int installServices(CustomActionData& data, const wchar_t *password);
-int uninstallServices(CustomActionData& data);
-int verifyServices(CustomActionData& data);
+int doesServiceExist(std::wstring &svcName);
+int installServices(CustomActionData &data, const wchar_t *password);
+int uninstallServices(CustomActionData &data);
+int verifyServices(CustomActionData &data);
 
-//delfiles.cpp
-BOOL DeleteFilesInDirectory(const wchar_t* dirname, const wchar_t* ext, bool dirs = false);
+// delfiles.cpp
+BOOL DeleteFilesInDirectory(const wchar_t *dirname, const wchar_t *ext, bool dirs = false);
 BOOL DeleteHomeDirectory(const std::wstring &user, PSID userSID);
 
-//caninstall.cpp 
+// caninstall.cpp
 bool canInstall(BOOL isDC, int ddUserExists, int ddServiceExists, const CustomActionData &data, bool &bResetPassword);
 extern HMODULE hDllModule;
 // rights we might be interested in
@@ -61,11 +56,12 @@ extern HMODULE hDllModule;
 #endif
 */
 
-//FinalizeInstall.cpp
+// FinalizeInstall.cpp
 UINT doFinalizeInstall(CustomActionData &data);
 
-//doUninstall.cpp
-typedef enum _uninstall_type {
+// doUninstall.cpp
+typedef enum _uninstall_type
+{
     UNINSTALL_UNINSTALL,
     UNINSTALL_ROLLBACK
 } UNINSTALL_TYPE;
@@ -74,22 +70,14 @@ UINT doUninstallAs(UNINSTALL_TYPE t);
 
 // see https://stackoverflow.com/a/45565001/425565
 // Template ErrType can be HRESULT (long) or DWORD (unsigned long)
-template <class ErrType>
-std::string GetErrorMessageStr(ErrType errCode)
+template <class ErrType> std::string GetErrorMessageStr(ErrType errCode)
 {
     const int buffsize = 4096;
     char buffer[buffsize];
     const DWORD len =
-        FormatMessageA(
-            FORMAT_MESSAGE_FROM_SYSTEM
-            | FORMAT_MESSAGE_IGNORE_INSERTS
-            | FORMAT_MESSAGE_MAX_WIDTH_MASK,
-            nullptr, // (not used with FORMAT_MESSAGE_FROM_SYSTEM)
-            errCode,
-            MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-            &buffer[0],
-            buffsize,
-            nullptr);
+        FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_MAX_WIDTH_MASK,
+                       nullptr, // (not used with FORMAT_MESSAGE_FROM_SYSTEM)
+                       errCode, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), &buffer[0], buffsize, nullptr);
     if (len > 0)
     {
         return std::string(buffer, len);
