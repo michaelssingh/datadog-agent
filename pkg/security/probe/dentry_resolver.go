@@ -13,12 +13,12 @@ import (
 	"unsafe"
 
 	lib "github.com/DataDog/ebpf"
+	"github.com/cobaugh/osrelease"
 	lru "github.com/hashicorp/golang-lru"
 	"github.com/pkg/errors"
 
 	"github.com/DataDog/datadog-agent/pkg/security/ebpf"
 )
-import "github.com/cobaugh/osrelease"
 
 const (
 	dentryPathKeyNotFound = "error: dentry path key not found"
